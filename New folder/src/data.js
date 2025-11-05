@@ -76,7 +76,7 @@ const products = [
         id: 7,
         name: "Sport Classic",
         price: 109.99,
-        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxzcG9ydHMlMjBzaG9lc3xlbnwxfHx8fDE3NjIyMjE0MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+        image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzcG9ydHMlMjBzaG9lc3xlbnwxfHx8fDE3NjIyMjE0MTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
         category: "Running",
         description: "Classic sports shoes combining retro style with modern comfort technology.",
         sizes: [7, 8, 9, 10, 11, 12],
