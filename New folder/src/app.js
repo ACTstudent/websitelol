@@ -60,12 +60,6 @@ function initPage() {
         button.addEventListener('click', handleAddToCart);
     });
 
-    const quantityInputs = document.querySelectorAll('.quantity-input');
-    quantityInputs.forEach(input => {
-        // Removed change listener as we now use +/- buttons with the fixed logic
-        // If a change listener is needed, it must be updated to pass size/color
-    });
-
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
@@ -238,7 +232,7 @@ function renderProductDetailsPage() {
 }
 
 function renderCartPage() {
-    const cartItems = cart; // FIX: Access global 'cart' variable from src/cart.js
+    const cartItems = cart; // Access global 'cart' variable from src/cart.js
     const total = getCartTotal();
 
     if (cartItems.length === 0) {
@@ -427,7 +421,7 @@ function renderAboutPage() {
                     <p>Our team of designers and craftsmen work tirelessly to create shoes that blend the latest fashion trends with cutting-edge technology. Every pair is carefully crafted using premium materials and undergoes rigorous quality testing.</p>
                 </div>
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxzaG9lJTIwZmFjdG9yeXxlbnwxfHx8fDE3NjIyMjAyNTd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Shoe Factory" class="about-image">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxzaG9lJTIwZmFjdG9yeXxlbnwxfHx8fDE3NjIyMjAyNTd8MA&lib=rb-4.1.0&q=80&w=1080" alt="Shoe Factory" class="about-image">
                 </div>
             </div>
             <div class="section-header">
@@ -463,6 +457,27 @@ function renderAboutPage() {
                     <h3>Innovation</h3>
                     <p>We continuously innovate to bring you the latest in shoe technology and design.</p>
                 </div>
+            </div>
+            <!-- NEW: Social Media Section -->
+            <div class="section-header" style="margin-top: 4rem;">
+                <h2>Connect With Us</h2>
+                <p>Follow us on social media for the latest updates and promotions!</p>
+            </div>
+            <div style="text-align: center; margin-top: 1rem;">
+                <a href="https://www.facebook.com/StepStyleShoes" target="_blank" class="btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                    </svg>
+                    Like us on Facebook
+                </a>
+                <a href="https://www.instagram.com/StepStyleShoes" target="_blank" class="btn-outline" style="margin-left: 1rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    </svg>
+                    Follow on Instagram
+                </a>
             </div>
         </section>
     `;
@@ -561,7 +576,7 @@ function generateStars(rating) {
     const hasHalfStar = rating % 1 !== 0;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
-    // FIX: Using the .star class from styles.css for solid stars
+    // Using the .star class from styles.css for solid stars
     return `
         ${'<svg class="star" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'.repeat(fullStars)}
         ${hasHalfStar ? '<svg class="star" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v15.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77z" fill="white" fill-opacity="0.5"/></svg>' : ''}
@@ -612,16 +627,18 @@ function handleAddToCart(event) {
     const quantity = parseInt(document.getElementById('quantity-input')?.value || 1);
 
     addToCart(product, size, color, quantity);
+    // Note: alert() is used here but should ideally be replaced with a custom modal UI in a production app.
     alert('Product added to cart!');
 }
 
 function addToCartFromCard(productId) {
     const product = products.find(p => p.id === productId);
+    // When adding from card, we assume default size/color and a quantity of 1
     addToCart(product, product.sizes[0], product.colors[0], 1);
+    // Note: alert() is used here but should ideally be replaced with a custom modal UI in a production app.
     alert('Product added to cart!');
 }
 
-// FIX: Updated wrapper function to pass size and color
 function updateCartQuantity(productId, size, color, quantity) {
     updateQuantity(productId, size, color, quantity);
     renderPage();
@@ -647,6 +664,7 @@ function handleLogin(event) {
     if (login(email, password)) {
         navigateTo('home');
     } else {
+        // Note: alert() is used here but should ideally be replaced with a custom modal UI in a production app.
         alert('Invalid credentials');
     }
 }
@@ -661,6 +679,7 @@ function handleSignup(event) {
     if (signup(name, email, password)) {
         navigateTo('home');
     } else {
+        // Note: alert() is used here but should ideally be replaced with a custom modal UI in a production app.
         alert('Signup failed');
     }
 }
@@ -671,16 +690,18 @@ function handleProfileUpdate(event) {
     const data = Object.fromEntries(formData);
 
     updateProfile(data);
+    // Note: alert() is used here but should ideally be replaced with a custom modal UI in a production app.
     alert('Profile updated successfully!');
 }
 
 function handleContact(event) {
     event.preventDefault();
+    // Note: alert() is used here but should ideally be replaced with a custom modal UI in a production app.
     alert('Thank you for your message! We\'ll get back to you soon.');
     event.target.reset();
 }
 
-// Initialize the app
+// Initialize the app when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     renderPage();
 });
