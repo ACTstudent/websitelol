@@ -29,19 +29,26 @@ function addToCart(product, size, color, quantity = 1) {
     updateCartUI();
 }
 
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+// FIX: Added size and color to uniquely identify the item
+function removeFromCart(productId, size, color) {
+    cart = cart.filter(item => 
+        !(item.id === productId && item.selectedSize === size && item.selectedColor === color)
+    );
     saveCart();
     updateCartUI();
 }
 
-function updateQuantity(productId, quantity) {
+// FIX: Added size and color to uniquely identify the item
+function updateQuantity(productId, size, color, quantity) {
     if (quantity <= 0) {
-        removeFromCart(productId);
+        removeFromCart(productId, size, color); // Use the fixed removeFromCart
         return;
     }
     
-    const item = cart.find(item => item.id === productId);
+    // FIX: Find item using all unique properties
+    const item = cart.find(item => 
+        item.id === productId && item.selectedSize === size && item.selectedColor === color
+    );
     if (item) {
         item.quantity = quantity;
         saveCart();
