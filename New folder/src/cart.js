@@ -10,6 +10,7 @@ function initCart() {
 }
 
 function addToCart(product, size, color, quantity = 1) {
+    // Check if item with same ID, size, and color already exists
     const existingItem = cart.find(
         item => item.id === product.id && item.selectedSize === size && item.selectedColor === color
     );
@@ -81,6 +82,7 @@ function updateCartUI() {
     
     if (cartCount) {
         cartCount.textContent = count;
+        // Ensure visibility only if count > 0
         cartCount.style.display = count > 0 ? 'flex' : 'none';
     }
     
