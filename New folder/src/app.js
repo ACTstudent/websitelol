@@ -62,7 +62,8 @@ function initPage() {
 
     const quantityInputs = document.querySelectorAll('.quantity-input');
     quantityInputs.forEach(input => {
-        input.addEventListener('change', handleQuantityChange);
+        // Removed change listener as we now use +/- buttons with the fixed logic
+        // If a change listener is needed, it must be updated to pass size/color
     });
 
     const loginForm = document.getElementById('login-form');
@@ -237,7 +238,7 @@ function renderProductDetailsPage() {
 }
 
 function renderCartPage() {
-    const cartItems = getCartItems();
+    const cartItems = cart; // FIX: Access global 'cart' variable from src/cart.js
     const total = getCartTotal();
 
     if (cartItems.length === 0) {
@@ -259,19 +260,21 @@ function renderCartPage() {
                     <h1>Shopping Cart</h1>
                     ${cartItems.map(item => `
                         <div class="cart-item">
-                            <img src="${item.image}" alt="${item.name}">
-                            <div class="item-details">
+                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                            <div class="cart-item-info">
                                 <h3>${item.name}</h3>
-                                <p>Size: ${item.selectedSize}, Color: ${item.selectedColor}</p>
-                                <p class="price">$${item.price.toFixed(2)}</p>
+                                <div class="cart-item-details">
+                                    <p>Size: ${item.selectedSize}</p>
+                                    <p>Color: ${item.selectedColor}</p>
+                                </div>
                             </div>
                             <div class="quantity-controls">
-                                <button onclick="updateCartQuantity(${item.id}, ${item.quantity - 1})">-</button>
-                                <input type="number" value="${item.quantity}" class="quantity-input" data-product-id="${item.id}" min="1">
-                                <button onclick="updateCartQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                                <button onclick="updateCartQuantity(${item.id}, '${item.selectedSize}', '${item.selectedColor}', ${item.quantity - 1})">-</button>
+                                <input type="number" value="${item.quantity}" class="quantity-display" data-product-id="${item.id}" min="1" readonly>
+                                <button onclick="updateCartQuantity(${item.id}, '${item.selectedSize}', '${item.selectedColor}', ${item.quantity + 1})">+</button>
                             </div>
                             <div class="item-total">$${(item.price * item.quantity).toFixed(2)}</div>
-                            <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+                            <button class="remove-btn btn-danger" onclick="removeFromCart(${item.id}, '${item.selectedSize}', '${item.selectedColor}')">Remove</button>
                         </div>
                     `).join('')}
                 </div>
@@ -298,9 +301,11 @@ function renderCartPage() {
 
 function renderLoginPage() {
     return `
-        <section class="auth-page">
-            <div class="auth-container">
-                <h1>Login</h1>
+        <section class="form-container">
+            <div class="form-card">
+                <div class="form-header">
+                    <h1>Login</h1>
+                </div>
                 <form id="login-form">
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -312,7 +317,9 @@ function renderLoginPage() {
                     </div>
                     <button type="submit" class="btn-primary">Login</button>
                 </form>
-                <p>Don't have an account? <a href="#" onclick="navigateTo('signup')">Sign up</a></p>
+                <div class="form-footer">
+                    Don't have an account? <a href="#" onclick="navigateTo('signup')">Sign up</a>
+                </div>
             </div>
         </section>
     `;
@@ -320,9 +327,11 @@ function renderLoginPage() {
 
 function renderSignupPage() {
     return `
-        <section class="auth-page">
-            <div class="auth-container">
-                <h1>Sign Up</h1>
+        <section class="form-container">
+            <div class="form-card">
+                <div class="form-header">
+                    <h1>Sign Up</h1>
+                </div>
                 <form id="signup-form">
                     <div class="form-group">
                         <label for="name">Name</label>
@@ -338,7 +347,9 @@ function renderSignupPage() {
                     </div>
                     <button type="submit" class="btn-primary">Sign Up</button>
                 </form>
-                <p>Already have an account? <a href="#" onclick="navigateTo('login')">Login</a></p>
+                <div class="form-footer">
+                    Already have an account? <a href="#" onclick="navigateTo('login')">Login</a>
+                </div>
             </div>
         </section>
     `;
@@ -354,11 +365,24 @@ function renderAccountPage() {
         <section class="account-page">
             <div class="section-container">
                 <h1>My Account</h1>
-                <div class="account-tabs">
-                    <button class="tab-btn active" onclick="switchTab('profile')">Profile</button>
-                    <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('profile')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>Profile</button>
+                    <button class="tab-btn" onclick="switchTab('orders')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                            <line x1="3" y1="6" x2="21" y2="6"/>
+                            <path d="M16 10a4 4 0 0 1-8 0"/>
+                        </svg>Orders</button>
                 </div>
-                <div id="profile-tab" class="tab-content active">
+                <div id="profile-tab" class="tab-content active card">
+                    <div class="card-header">
+                        <h2>Personal Information</h2>
+                        <p>Update your personal details and contact information.</p>
+                    </div>
                     <form id="profile-form">
                         <div class="form-grid">
                             <div class="form-group">
@@ -381,8 +405,8 @@ function renderAccountPage() {
                         <button type="submit" class="btn-primary">Update Profile</button>
                     </form>
                 </div>
-                <div id="orders-tab" class="tab-content">
-                    <p>No orders yet.</p>
+                <div id="orders-tab" class="tab-content card">
+                    <p>No orders yet. Start shopping now!</p>
                 </div>
             </div>
         </section>
@@ -391,7 +415,11 @@ function renderAccountPage() {
 
 function renderAboutPage() {
     return `
-        <section class="about-page">
+        <section class="about-hero">
+            <h1>Our Story</h1>
+            <p>Blending comfort, quality, and fashion since day one.</p>
+        </section>
+        <section class="about-section">
             <div class="about-grid">
                 <div class="about-content">
                     <h1>About StepStyle</h1>
@@ -399,8 +427,11 @@ function renderAboutPage() {
                     <p>Our team of designers and craftsmen work tirelessly to create shoes that blend the latest fashion trends with cutting-edge technology. Every pair is carefully crafted using premium materials and undergoes rigorous quality testing.</p>
                 </div>
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzaG9lJTIwZmFjdG9yeXxlbnwxfHx8fDE3NjIyMjAyNTd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Shoe Factory">
+                    <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxzaG9lJTIwZmFjdG9yeXxlbnwxfHx8fDE3NjIyMjAyNTd8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Shoe Factory" class="about-image">
                 </div>
+            </div>
+            <div class="section-header">
+                <h2>Our Core Values</h2>
             </div>
             <div class="values-grid">
                 <div class="value-card">
@@ -509,14 +540,16 @@ function renderContactPage() {
 function renderProductCard(product) {
     return `
         <div class="product-card" onclick="navigateTo('product-details', ${product.id})">
-            <img src="${product.image}" alt="${product.name}">
-            <div class="product-info">
-                <h3>${product.name}</h3>
-                <div class="rating">
+            <div class="product-image-container">
+                <img src="${product.image}" alt="${product.name}" class="product-image">
+                <div class="product-rating">
                     ${generateStars(product.rating)}
-                    <span>(${product.reviews})</span>
                 </div>
-                <p class="price">$${product.price.toFixed(2)}</p>
+            </div>
+            <div class="product-info">
+                <p class="product-category">${product.category}</p>
+                <h3 class="product-name">${product.name}</h3>
+                <p class="product-price">$${product.price.toFixed(2)}</p>
                 <button class="btn-primary add-to-cart-btn" data-product-id="${product.id}" onclick="event.stopPropagation(); addToCartFromCard(${product.id})">Add to Cart</button>
             </div>
         </div>
@@ -528,9 +561,10 @@ function generateStars(rating) {
     const hasHalfStar = rating % 1 !== 0;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
+    // FIX: Using the .star class from styles.css for solid stars
     return `
-        ${'<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'.repeat(fullStars)}
-        ${hasHalfStar ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/><path d="M12 2v15.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="none" stroke="currentColor" stroke-width="1"/></svg>' : ''}
+        ${'<svg class="star" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'.repeat(fullStars)}
+        ${hasHalfStar ? '<svg class="star" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2v15.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77z" fill="white" fill-opacity="0.5"/></svg>' : ''}
         ${'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'.repeat(emptyStars)}
     `;
 }
@@ -587,8 +621,9 @@ function addToCartFromCard(productId) {
     alert('Product added to cart!');
 }
 
-function updateCartQuantity(productId, quantity) {
-    updateQuantity(productId, quantity);
+// FIX: Updated wrapper function to pass size and color
+function updateCartQuantity(productId, size, color, quantity) {
+    updateQuantity(productId, size, color, quantity);
     renderPage();
 }
 
