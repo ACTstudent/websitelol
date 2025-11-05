@@ -10,6 +10,7 @@ function initAuth() {
 }
 
 function login(email, password) {
+    // Dummy login logic
     if (email && password) {
         currentUser = {
             id: 1,
@@ -26,11 +27,15 @@ function login(email, password) {
 }
 
 function signup(name, email, password) {
+    // Dummy signup logic
     if (name && email && password) {
         currentUser = {
             id: 1,
             name: name,
-            email: email
+            email: email,
+            // Provide default fields for profile page
+            phone: '', 
+            address: ''
         };
         localStorage.setItem('currentUser', JSON.stringify(currentUser));
         updateAuthUI();
@@ -61,16 +66,16 @@ function updateAuthUI() {
     const userName = document.getElementById('user-name');
 
     if (currentUser) {
-        authButtons.style.display = 'none';
-        userMenu.style.display = 'flex';
-        mobileAuth.style.display = 'none';
-        mobileUserMenu.style.display = 'flex';
-        userName.textContent = currentUser.name;
+        if (authButtons) authButtons.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'flex';
+        if (mobileAuth) mobileAuth.style.display = 'none';
+        if (mobileUserMenu) mobileUserMenu.style.display = 'flex';
+        if (userName) userName.textContent = currentUser.name;
     } else {
-        authButtons.style.display = 'flex';
-        userMenu.style.display = 'none';
-        mobileAuth.style.display = 'flex';
-        mobileUserMenu.style.display = 'none';
+        if (authButtons) authButtons.style.display = 'flex';
+        if (userMenu) userMenu.style.display = 'none';
+        if (mobileAuth) mobileAuth.style.display = 'flex';
+        if (mobileUserMenu) mobileUserMenu.style.display = 'none';
     }
 }
 
